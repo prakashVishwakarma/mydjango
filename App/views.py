@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.from django.http import JsonResponse
 from .models import Post
 from django.http import JsonResponse
+
+from django.shortcuts import get_object_or_404
+import json
 
 def create_post(request):
     # Access data from request.POST dictionary
@@ -38,3 +41,27 @@ def create_post(request):
     
 
     return JsonResponse(response_data, status=201)
+
+def get_all_posts(request):
+    posts = Post.objects.all()
+    data = []
+    for post in posts:
+        data.append({
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "created_at": post.created_at.isoformat(),  # Convert datetime to ISO format
+            "updated_at": post.updated_at.isoformat(),
+        })
+    return JsonResponse(data, safe=False)  # Allow for non-dictionary data
+
+def get_post_by_id(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    data = {
+        "id": post.id,
+        "title": post.title,
+        "content": post.content,
+        "created_at": post.created_at.isoformat(),
+        "updated_at": post.updated_at.isoformat(),
+    }
+    return JsonResponse(data)
