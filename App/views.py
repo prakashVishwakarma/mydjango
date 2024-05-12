@@ -55,7 +55,6 @@ def get_all_posts(request):
         })
     return JsonResponse(data, safe=False)  # Allow for non-dictionary data
 
-def get_post_by_id(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     data = {
         "id": post.id,
