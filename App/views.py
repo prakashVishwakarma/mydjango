@@ -47,3 +47,54 @@ def create_post(request):
 
     return JsonResponse(response_data, status=201)
 
+
+def get_all_posts(request):
+    posts = Post.objects.all()
+
+    if not posts.exists():
+        # No data found in database, send informative message
+        return JsonResponse({'message': 'There are currently no posts available. Data is being mined!'})
+
+    data = []
+    for post in posts:
+        data.append({
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "created_at": post.created_at.isoformat(),  # Convert datetime to ISO format
+            "updated_at": post.updated_at.isoformat(),
+        })
+    return JsonResponse(data, safe=False)  # Allow for non-dictionary data
+
+
+def get_post_by_id(request, post_id):
+    try:
+        post = get_object_or_404(Post, pk=post_id)
+        data = {
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "created_at": post.created_at.isoformat(),
+            "updated_at": post.updated_at.isoformat(),
+        }
+        return JsonResponse(data)
+    except Http404:
+        # Post not found, send informative message
+        return JsonResponse({'message': 'Post with ID {} not found.'.format(post_id)})
+
+
+def delete_post(request, post_id):
+    try:
+        # Check if Post with the given ID exists
+        if not Post.objects.filter(pk=post_id).exists():
+            raise ObjectDoesNotExist('Post with ID {} does not exist.'.format(post_id))
+
+        post = Post.objects.get(pk=post_id)
+        post.delete()
+        return JsonResponse({'message': 'Post deleted successfully.'})
+
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'error': str(e)}, status=404)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)  # Handle other errors
