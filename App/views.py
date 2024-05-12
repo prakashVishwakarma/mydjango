@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 
 # Create your views here.from django.http import JsonResponse
 from .models import Post
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 
 from django.shortcuts import get_object_or_404
 import json
@@ -98,3 +98,29 @@ def delete_post(request, post_id):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)  # Handle other errors
+
+
+def patch_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method != 'PATCH':
+        return HttpResponse(status=405)  # Method Not Allowed
+
+    try:
+        data = json.loads(request.body)  # Parse request body as JSON
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+
+    # Update specific fields based on request data
+    for field, value in data.items():
+        if field not in ('title', 'content'):
+            return JsonResponse({'error': 'Invalid field name'}, status=400)
+
+        # Validation for title length
+        # if field == 'title' and not validate_title_length(value):
+        #     return JsonResponse({'error': 'Title length invalid'}, status=400)
+
+        setattr(post, field, value)
+
+    post.save()
+    return JsonResponse({'message': 'Post updated successfully'}, status=200)
