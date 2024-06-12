@@ -1,11 +1,12 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.shortcuts import render, get_object_or_404
-
 # Create your views here.from django.http import JsonResponse
 from .models import Post
 from django.http import JsonResponse, Http404
-
 from django.shortcuts import get_object_or_404
+
+from django.http import JsonResponse
+from .models import UserProfile, Address
 import json
 
 
@@ -98,3 +99,39 @@ def delete_post(request, post_id):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)  # Handle other errors
+
+
+#############   ONE TO ONE RELATIONSHIP   ##########################################################
+
+# def create_user_profile(request):
+#     if request.method == 'POST':
+#         # Parse JSON data from request body
+#         try:
+#             data = json.loads(request.body)
+#         except json.JSONDecodeError:
+#             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+
+#         # Extract user and address data
+#         name = data.get('name')
+#         email = data.get('email')
+#         street = data.get('address', {}).get('street')
+#         city = data.get('address', {}).get('city')
+
+#         # Validate data
+#         if not all([name, email, street, city]):
+#             return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+#         # Create UserProfile object
+#         user_profile = UserProfile.objects.create(name=name, email=email)
+
+#         # Create Address object if address data exists
+#         if street and city:
+#             address = Address.objects.create(user_profile=user_profile, street=street, city=city)
+#             user_profile.address = address
+#             user_profile.save()
+
+#         # Return serialized data (using dictionary)
+#         return JsonResponse({'name': user_profile.name, 'email': user_profile.email,
+#                              'address': {'street': user_profile.address.street, 'city': user_profile.address.city}})
+#     else:
+#         return JsonResponse({'error': 'Method not allowed'}, status=405)

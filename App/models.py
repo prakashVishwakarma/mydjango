@@ -19,23 +19,14 @@ class Post(models.Model):
 
 #############   ONE TO ONE RELATIONSHIP   ##########################################################
 
-class Account(models.Model):
-    username = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=128)
+class UserProfile(models.Model):
+    # User details
+    name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
 
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
 
-    def __str__(self):
-        return self.username
-
-
-class Profile(models.Model):
-    account = models.OneToOneField(Account, on_delete=models.CASCADE, primary_key=True)
-    bio = models.TextField(blank=True)
-    birthday = models.DateField(null=True, blank=True)
-    interests = models.CharField(max_length=255, blank=True)
-
-    def __str__(self):
-        return f"{self.account.username}'s Profile"
+class Address(models.Model):
+    # User address details
+    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE, primary_key=True)
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=50)
