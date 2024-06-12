@@ -117,9 +117,15 @@ def create_user_profile(request):
         street = data.get('address', {}).get('street')
         city = data.get('address', {}).get('city')
 
-        # Validate data
+        # Validate data (including email existence)
+        errors = {}
         if not all([name, email, street, city]):
-            return JsonResponse({'error': 'Missing required fields'}, status=400)
+            errors['missing_fields'] = 'Missing required fields'
+        if UserProfile.objects.filter(email=email).exists():
+            errors['email_exists'] = 'Email address already exists'
+
+        if errors:
+            return JsonResponse({'errors': errors}, status=400)
 
         # Create UserProfile object
         user_profile = UserProfile.objects.create(name=name, email=email)
