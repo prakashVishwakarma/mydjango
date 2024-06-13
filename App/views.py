@@ -141,3 +141,25 @@ def create_user_profile(request):
                              'address': {'street': user_profile.address.street, 'city': user_profile.address.city}})
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+def get_all_user_profiles(request):
+    if request.method == 'GET':
+        user_profiles = UserProfile.objects.all()  # Fetch all user profiles
+        data = []
+        for profile in user_profiles:
+            address = profile.address  # Access the related Address object
+
+            # Serialize data into a dictionary (customizable)
+            data.append({
+                'id': profile.id,
+                'name': profile.name,
+                'email': profile.email,
+                'address': {
+                    'street': address.street,
+                    'city': address.city,
+                },
+            })
+        return JsonResponse(data, safe=False)  # Handle nested serialization
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)

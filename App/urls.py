@@ -8,4 +8,5 @@ urlpatterns = [
     path('delete_posts/<int:post_id>/', views.delete_post, name='delete_post'),
     # ___________   ONE-TO-ONE RELATIONSHIP   ___________
     path('user-profiles/', views.create_user_profile, name='create_user_profile'),
+    path('get-all-user-profiles/', views.get_all_user_profiles, name='get_all_user_profiles'),
 ]
