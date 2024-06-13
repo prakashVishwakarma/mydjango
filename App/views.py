@@ -163,3 +163,24 @@ def get_all_user_profiles(request):
         return JsonResponse(data, safe=False)  # Handle nested serialization
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+def get_user_profile_by_id(request, user_id):
+    if request.method == 'GET':
+        try:
+            user_profile = UserProfile.objects.get(pk=user_id)  # Fetch by ID
+            address = user_profile.address
+
+            # Serialize data into a dictionary
+            data = {
+                'id': user_profile.id,
+                'name': user_profile.name,
+                'email': user_profile.email,
+                'street': address.street,
+                'city': address.city,
+            }
+            return JsonResponse(data)
+        except UserProfile.DoesNotExist:
+            return JsonResponse({'error': 'User profile not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)

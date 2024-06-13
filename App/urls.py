@@ -9,4 +9,5 @@ urlpatterns = [
     # ___________   ONE-TO-ONE RELATIONSHIP   ___________
     path('user-profiles/', views.create_user_profile, name='create_user_profile'),
     path('get-all-user-profiles/', views.get_all_user_profiles, name='get_all_user_profiles'),
+    path('get-user-profiles-by-id/<int:user_id>/', views.get_user_profile_by_id, name='get_user_profile_by_id'),
 ]
